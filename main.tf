@@ -21,11 +21,16 @@ resource "docker_image" "gitlab-runner" {
    keep_locally = true 
 }
 
+resource "docker_network" "bridge_network" {
+  name = var.network_name
+  driver = var.network_driver
+}
+
 resource "docker_container" "gitlab-ce" {
   image = docker_image.gitlab.image_id
   name  = "gitlab-ce"
-  hostname = "localhost"
-  env = ["GITLAB_OMNIBUS_CONFIG = external_url http://localhost"]
+  hostname = var.hostname
+  env = var.env_values
   ports {
     internal = 80
     external = 8080
@@ -36,21 +41,21 @@ resource "docker_container" "gitlab-ce" {
   }
   mounts {
     target = "/etc/gitlab"
-    source = "C:/Users/Anthony/Documents/Repo/Gitlab/config"
+    source = "/config"
     type = "bind"
   }
   mounts {
     target = "/etc/log/gitlab"
-    source = "C:/Users/Anthony/Documents/Repo/Gitlab/logs"
+    source = "/logs"
     type = "bind"
   }
   mounts {
     target = "/etc/opt/gitlab"
-    source = "C:/Users/Anthony/Documents/Repo/Gitlab/data"
+    source = "/data"
     type = "bind"
   }
   networks_advanced {
-    name = "gitlab-network"
+    name = var.network_name
   }
 }
 
@@ -64,10 +69,10 @@ resource "docker_container" "gitlab-runner" {
   }
     mounts {
     target = "/etc/gitlab-runner"
-    source = "C:/Users/Anthony/Documents/Repo/Gitlab/gitlab-runner"
+    source = "/gitlab-runner"
     type = "bind"
   }
     networks_advanced {
-    name = "gitlab-network"
+    name = var.network_name
   }
 }
