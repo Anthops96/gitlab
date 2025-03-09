@@ -39,20 +39,17 @@ resource "docker_container" "gitlab-ce" {
     internal = 443
     external = 8443
   }
-  mounts {
-    target = "/etc/gitlab"
-    source = "/config"
-    type = "bind"
+  volumes {
+    host_path = "/c/Users/Anthony/Documents/Repo/Gitlab/config"
+    container_path = "/etc/gitlab"  
   }
-  mounts {
-    target = "/etc/log/gitlab"
-    source = "/logs"
-    type = "bind"
+  volumes {
+    host_path = "/c/Users/Anthony/Documents/Repo/Gitlab/logs"
+    container_path = "/etc/log/gitlab"   
   }
-  mounts {
-    target = "/etc/opt/gitlab"
-    source = "/data"
-    type = "bind"
+  volumes {
+    host_path = "/c/Users/Anthony/Documents/Repo/Gitlab/data"
+    container_path = "/etc/opt/gitlab"
   }
   networks_advanced {
     name = var.network_name
@@ -62,17 +59,15 @@ resource "docker_container" "gitlab-ce" {
 resource "docker_container" "gitlab-runner" {
   image = docker_image.gitlab-runner.image_id
   name  = "gitlab-runner"
-  mounts {
-    target = "/var/run/docker.sock"
-    source = "/var/run/docker.sock"
-    type = "bind"
+  volumes {
+    host_path = "/var/run/docker.sock"
+    container_path = "/var/run/docker.sock"
   }
-    mounts {
-    target = "/etc/gitlab-runner"
-    source = "/gitlab-runner"
-    type = "bind"
+  volumes {
+    host_path = "/c/Users/Anthony/Documents/Repo/Gitlab/gitlab-runner"
+    container_path = "/etc/gitlab-runner"
   }
-    networks_advanced {
+  networks_advanced {
     name = var.network_name
   }
 }
